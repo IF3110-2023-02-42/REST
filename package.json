@@ -1,0 +1,33 @@
+{
+  "name": "studydojo_rest",
+  "version": "1.0.0",
+  "description": "REST Web Service using Typescript Express and MySQL",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --project ./",
+    "start:dev": "nodemon ./src/index.ts",
+    "start:prod": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IF3110-2023-02-42/REST.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IF3110-2023-02-42/REST/issues"
+  },
+  "homepage": "https://github.com/IF3110-2023-02-42/REST#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "ip": "^1.1.8",
+    "mysql": "^2.18.1",
+    "pino": "^8.16.1",
+    "pino-pretty": "^10.2.3"
+  },
+  "devDependencies": {
+    "daemon": "^1.1.0"
+  }
+}
