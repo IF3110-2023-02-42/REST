@@ -2,11 +2,11 @@
   "name": "studydojo_rest",
   "version": "1.0.0",
   "description": "REST Web Service using Typescript Express and MySQL",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "build": "tsc --project ./",
+    "build": "rimraf ./dist && tsc --project ./",
     "start:dev": "nodemon ./src/index.ts",
-    "start:prod": "node ./src/index.js"
+    "start:prod": "node ./dist/index.ts"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,11 @@
     "pino-pretty": "^10.2.3"
   },
   "devDependencies": {
-    "daemon": "^1.1.0"
+    "@types/express": "^4.17.20",
+    "daemon": "^1.1.0",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.5",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
   }
 }

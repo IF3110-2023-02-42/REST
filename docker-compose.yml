@@ -1,3 +1,43 @@
+version: "3.8"
 services:
-  ports:
-    - 3000:3000
+  rest-api:
+    build: .
+    container_name: studydojo-rest-service-api
+    ports:
+      - 3000:3000
+    env_file: .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    # depends_on:
+    #   # - mysql
+    #   - redis
+    networks:
+      - api-mysql-redis
+  mysql:
+    image: mysql:latest
+    ports:
+      - 3307:3308
+    container_name: studydojo-rest-service-db
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DB: ${MYSQL_DATABASE}
+    volumes:
+      - ./mysql:/var/lib/mysql/data
+    networks:
+      - api-mysql-redis
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6380:6379
+    hostname: studydojo-rest-service-cache
+    volumes:
+      - ./redis:/data
+    networks:
+      - api-mysql-redis
+networks:
+  api-mysql-redis:
+    driver: bridge
