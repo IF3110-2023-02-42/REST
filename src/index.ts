@@ -1,11 +1,27 @@
-import express, { Request, Response} from "express";
+import express from 'express';
+import cors from 'cors';
+import {discussionRoute} from './routes/discussionRoute';
 
-const app = express();
 
-app.get("/", (req:Request, res:Response ) => {
-    return res.json({
-        status: "success oii",
-    });
-});
+if (require.main === module) { // Program hanya dijalankan jika dipanggil langsung 
+    const app = express();
+    const port = process.env.PORT || 3000;
 
-app.listen(3000, () => console.log("listening on port 3000"));
+
+    app.use(
+        cors({
+            origin: '*',
+        })
+    );
+    app.use(express.json());
+    app.use('/discussion', discussionRoute);
+
+    
+    app.listen(port ,() => console.log(`App listening on port ${port}!`));
+}
+
+
+
+
+
+
