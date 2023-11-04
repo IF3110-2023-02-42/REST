@@ -9,9 +9,9 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-    # depends_on:
-    #   # - mysql
-    #   - redis
+    depends_on:
+      - mysql
+      - redis
     networks:
       - api-mysql-redis
   mysql:
@@ -25,7 +25,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DB: ${MYSQL_DATABASE}
     volumes:
-      - ./mysql:/var/lib/mysql/data
+      - ./mysql:/var/lib/mysql
     networks:
       - api-mysql-redis
   redis:
