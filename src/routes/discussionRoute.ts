@@ -2,7 +2,7 @@ import { Router } from "express";
 import { AuthenticationMiddleware } from "../middlewares/auth";
 import { DiscussionController } from "../controllers/discussion";
 
-export class discussionRoute {
+export class DiscussionRoute {
     // Attributes
     authenticationMiddleware: AuthenticationMiddleware;
     discussionController: DiscussionController;
