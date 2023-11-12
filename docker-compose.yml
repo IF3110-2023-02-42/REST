@@ -9,6 +9,7 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
+      - ./src:/app/src
     depends_on:
       - mysql
       - redis
