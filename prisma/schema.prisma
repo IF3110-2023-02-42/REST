@@ -7,52 +7,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
-  posts Post[]
+model Diskusi {
+  ID_Diskusi     String     @id @default(uuid())
+  Penulis        String
+  Judul          String
+  Created_at     DateTime   @default(now())
+  Updated_at     DateTime   @updatedAt
+  Konten         String
+  JumlahKomentar Int
+  Komentar       Komentar[]
 }
 
-model Post {
-  id      Int    @id @default(autoincrement())
-  title   String
-  content String
-  userId  Int
-  user    User   @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "Post_userId_fkey")
+model Komentar {
+  ID_Komentar     String   @id @default(uuid())
+  diskusi         Diskusi  @relation(fields: [ID_Diskusi], references: [ID_Diskusi])
+  ID_Diskusi      String
+  Penulis         String
+  Created_at      DateTime @default(now())
+  Updated_at      DateTime @updatedAt
+  Konten          String
+  Jumlah_Upvote   Int
+  Jumlah_Downvote Int
 }
 
-model Soal{
-  ID_Soal         Int     @id @default(autoincrement())
-  ID_Latsol       Int
-  pertanyaan      String
-  jawaban_benar   String
-  jawaban_salah1  String
-  jawaban_salah2  String
-  jawaban_salah3  String
+model Soal {
+  ID_Soal          String             @id @default(uuid())
+  Latsol           Latihan_Soal       @relation(fields: [ID_Latsol], references: [ID_Latsol])
+  ID_Latsol        String
+  pertanyaan       String
+  jawaban_benar    String
+  jawaban_salah1   String
+  jawaban_salah2   String
+  jawaban_salah3   String
+  Jawaban_Pengguna Jawaban_Pengguna[]
 }
 
-model Jawaban_Pengguna{
-  ID_Soal       Int
-  ID_Pengguna   Int
-  jawaban       String
+model Jawaban_Pengguna {
+  soal        Soal   @relation(fields: [ID_Soal], references: [ID_Soal])
+  ID_Soal     String
+  ID_Pengguna Int
+  jawaban     String
 
   @@id([ID_Soal, ID_Pengguna])
 }
 
-model Latihan_Soal{
-  ID_Latsol     Int     @id @default(autoincrement())
-  ID_Material   Int
-  judul         String
-  deksripsi     String
+model Latihan_Soal {
+  ID_Latsol      String           @id @default(uuid())
+  ID_Material    Int
+  judul          String
+  deksripsi      String
+  Soal           Soal[]
+  History_Latsol History_Latsol[]
 }
 
-model History_Latsol{
-  ID_Latsol     Int
-  ID_Pengguna   Int
-  modified_at   DateTime
-  nilai         Int
+model History_Latsol {
+  Latsol      Latihan_Soal @relation(fields: [ID_Latsol], references: [ID_Latsol])
+  ID_Latsol   String
+  ID_Pengguna Int
+  modified_at DateTime
+  nilai       Int
+
   @@id([ID_Latsol, ID_Pengguna])
 }
