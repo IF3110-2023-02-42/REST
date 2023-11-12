@@ -16,5 +16,7 @@ export class DiscussionRoute {
     // Method
     getRoute(){
         return Router()
+            .get("/", this.discussionController.findAll())
+            .post("/add", this.discussionController.addDiscussion())
     }
 }

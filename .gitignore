@@ -1,4 +1,4 @@
 node_modules/
-mysql/
+db_data/
 dist/
 redis/
