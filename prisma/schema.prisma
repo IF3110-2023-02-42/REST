@@ -23,3 +23,36 @@ model Post {
 
   @@index([userId], map: "Post_userId_fkey")
 }
+
+model Soal{
+  ID_Soal         Int     @id @default(autoincrement())
+  ID_Latsol       Int
+  pertanyaan      String
+  jawaban_benar   String
+  jawaban_salah1  String
+  jawaban_salah2  String
+  jawaban_salah3  String
+}
+
+model Jawaban_Pengguna{
+  ID_Soal       Int
+  ID_Pengguna   Int
+  jawaban       String
+
+  @@id([ID_Soal, ID_Pengguna])
+}
+
+model Latihan_Soal{
+  ID_Latsol     Int     @id @default(autoincrement())
+  ID_Material   Int
+  judul         String
+  deksripsi     String
+}
+
+model History_Latsol{
+  ID_Latsol     Int
+  ID_Pengguna   Int
+  modified_at   DateTime
+  nilai         Int
+  @@id([ID_Latsol, ID_Pengguna])
+}
