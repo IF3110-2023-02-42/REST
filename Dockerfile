@@ -4,17 +4,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY prisma ./prisma/
-
-COPY .env ./
 
 COPY tsconfig.json ./
 
 COPY src ./src
 
-RUN npx prisma generate
-
+CMD [ "npm", "run", "start:dev" ]
 
 EXPOSE 3000
-
-CMD [ "npm", "run", "start:dev" ]
