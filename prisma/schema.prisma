@@ -15,6 +15,7 @@ model Diskusi {
   Updated_at     DateTime   @updatedAt
   Konten         String
   JumlahKomentar Int
+  Keywords       String
   Komentar       Komentar[]
 }
 
