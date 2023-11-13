@@ -1,7 +1,48 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { prisma } from "../services/prisma";
 
 export class ExerciseController {
+    getExerciseHistoryById() {
+        return async (req: Request, res: Response) => {
+            try {
+                console.log("Getting History Exercise by User Id");
+
+                const ID_Pengguna = parseInt(req.query.ID_Pengguna as string);
+
+                console.log('ID_Pengguna', ID_Pengguna);
+                // if (isNaN(ID_Pengguna)) {
+                //     throw new Error("ID_Pengguna must be a number");
+                // }
+                // console.log("ID_Pengguna : ", ID_Pengguna);
+
+                // const historyList = await prisma.history_Latsol.findMany({
+                //     include: {
+                //         latihan_Soal: true,
+                //     },
+                //     where: {
+                //         ID_Pengguna: ID_Pengguna,
+                //     },
+                //     select: {
+                //         judul: true,
+                //         ID_Latsol: true,
+                //         nilai: true,
+                //         modified_at: true,
+                //     },
+                // });
+                // // CONTINUE HERE
+
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: ID_Pengguna,
+                });
+
+            } catch (error) {
+                res.status(400).json({ error });
+            }
+        }
+    }
+
     getHistoryDummy() {
         return async (req: Request, res: Response) => {
             const cardExerciseDum1 = {
