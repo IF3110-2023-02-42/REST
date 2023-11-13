@@ -1,36 +1,33 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-import {DiscussionModel} from "../models/discussion";
-
+import { prisma } from "../services/prisma";
 export class DiscussionController {
-
-    model:DiscussionModel;
-    constructor(){
-        this.model = new DiscussionModel();
-    }
-
+    
     findAll() {
-        return async (req: Request, res: Response) => {
-            // Nanti nge fetch semua data discussion dari database
-            let discussionsTest = [{
-                id: "1",
-                judul: "Economic Bubblee",
-                dateCreated: 2,
-                author: "Fadhil",
-                content: "Apa itu Economic Bubble?",
-                numOfComment: 7,
-                keywords: ["Economic", "Bubble"],
-            }, {
-                id: "2",
-                judul: "Artificial Neural Network",
-                dateCreated: 3,
-                author: "Fadhil Amri",
-                content: "Apakah ANN memiliki performa yang lebih baik daripada KNN untuk task klasifikasi?",
-                numOfComment: 11,
-                keywords: ["AI", "ANN", "KNN"],
-            }];
+        async function getAllDiscussions(){
+            const result = await prisma.diskusi.findMany();
+            return result; 
+        }
 
-            let discussions = await this.model.getAllDiscussions();
+        return async (req: Request, res: Response) => {
+            let result = await getAllDiscussions();
+            
+            let discussions = result.map((discussion) =>
+            {
+                const currentTime = new Date().getTime();
+                const discussionTime = discussion.Created_at.getTime();
+                
+                return {
+                    id: discussion.ID_Diskusi,
+                    judul: discussion.Judul,
+                    dateCreated: Math.floor(Math.abs(currentTime - discussionTime) / (1000*60)),
+                    author: discussion.Penulis,
+                    content: discussion.Konten,
+                    numOfComment: discussion.JumlahKomentar,
+                    keywords: discussion.Keywords.split(",")
+                };
+            }
+            )
 
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
@@ -40,10 +37,23 @@ export class DiscussionController {
     }
 
     addDiscussion() {
+
+        async function addNewDiscussion(judul: string, author:string, content:string, numOfComment:number, keywords:string){
+            const discussion = await prisma.diskusi.create({
+                data:{
+                    Judul : judul,
+                    Penulis : author,
+                    Konten : content,
+                    JumlahKomentar : numOfComment,
+                    Keywords : keywords,
+                    },
+                })
+            return discussion;
+        }
         return async (req: Request, res: Response) => {
-            // Nanti insert data ke database
+            // Insert ke database
             let data = req.body;
-            let newData = await this.model.addNewDiscussion(data.judul, data.author, data.content, data.numOfComment, data.keywords);
+            let newData = await addNewDiscussion(data.judul, data.author, data.content, data.numOfComment, data.keywords);
 
             if (newData){
                 // Jika sukses, fetch data terbaru dari database (data yang baru diinput)
