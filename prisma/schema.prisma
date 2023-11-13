@@ -15,12 +15,13 @@ model Diskusi {
   Updated_at     DateTime   @updatedAt
   Konten         String
   JumlahKomentar Int
+  Keywords       String
   Komentar       Komentar[]
 }
 
 model Komentar {
   ID_Komentar     String   @id @default(uuid())
-  diskusi         Diskusi  @relation(fields: [ID_Diskusi], references: [ID_Diskusi])
+  diskusi         Diskusi  @relation(fields: [ID_Diskusi], references: [ID_Diskusi], onDelete: Cascade)
   ID_Diskusi      String
   Penulis         String
   Created_at      DateTime @default(now())
@@ -32,7 +33,7 @@ model Komentar {
 
 model Soal {
   ID_Soal          String             @id @default(uuid())
-  Latsol           Latihan_Soal       @relation(fields: [ID_Latsol], references: [ID_Latsol])
+  Latsol           Latihan_Soal       @relation(fields: [ID_Latsol], references: [ID_Latsol], onDelete: Cascade)
   ID_Latsol        String
   pertanyaan       String
   jawaban_benar    String
@@ -61,7 +62,7 @@ model Latihan_Soal {
 }
 
 model History_Latsol {
-  Latsol      Latihan_Soal @relation(fields: [ID_Latsol], references: [ID_Latsol])
+  Latsol      Latihan_Soal @relation(fields: [ID_Latsol], references: [ID_Latsol], onDelete: Cascade)
   ID_Latsol   String
   ID_Pengguna Int
   modified_at DateTime
