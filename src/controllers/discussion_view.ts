@@ -55,8 +55,25 @@ export class DiscussionViewController {
             });
         }
     }
-    addComments(){
+    addComment(){
+        return async (req: Request, res: Response) => {
+            // tambah komentar ke database
 
+            let comment = {
+                id_diskusi: req.body.id,
+                penulis: req.body.penulis,
+                created_at: req.body.created_at,
+                updated_at: req.body.updated_at,
+                konten: req.body.konten,
+                jumlah_upvote: req.body.jumlah_upvote,
+                jumlah_downvote: req.body.jumlah_downvote,
+            }
+
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: comment,
+            });
+        }
     }
     upVote(){
 

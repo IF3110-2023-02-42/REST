@@ -18,5 +18,6 @@ export class DiscussionViewRoute {
         return Router()
             .get("/1", this.discussionViewController.getDetail())
             .get("/1/comment", this.discussionViewController.getComments())
+            .post("/1/addcomment", this.discussionViewController.addComment())
     }
 }
