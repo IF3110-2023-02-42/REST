@@ -16,8 +16,7 @@ export class ExerciseRoute {
     // Method
     getRoute() {
         return Router()
-            .get("/test", this.authenticationMiddleware.authenticate(), this.exerciseController.getHistoryDummy())
-            .get("/test2", this.authenticationMiddleware.authenticate(), this.exerciseController.getHistoryDummy2())
-            .post("/addres", this.authenticationMiddleware.authenticate(), this.exerciseController.addDiscussion())
+            .get("/getHistoryExerciseListById", this.exerciseController.getExerciseHistoryListById())
+            .get("/getHistoryExerciseById", this.exerciseController.getExerciseHistoryById())
     }
 }
