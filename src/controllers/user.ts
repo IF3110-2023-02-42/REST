@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { sign } from "jsonwebtoken";
-import { secretToken } from "../config/jwtConfig";
+import { secretToken, expireIn } from "../config/jwtConfig";
 
 export class UserController {
     login() {
@@ -10,7 +10,9 @@ export class UserController {
             
             // Lakukan matching dengan data yang ada (saat backend login dan register jadi) , bisa aja ga ada 
 
-            const accessToken = sign({username : username }, secretToken)
+            const accessToken = sign({username : username }, secretToken,  {
+                expiresIn: expireIn,
+            })
             res.status(StatusCodes.OK).json({
                 message : ReasonPhrases.OK,
                 data: accessToken

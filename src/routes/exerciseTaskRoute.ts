@@ -16,6 +16,6 @@ export class ExerciseTaskRoute {
     // Method
     getRoute(){
         return Router()
-            .get("/1", this.exerciseTaskController.getExercise())
+            .get("/1", this.authenticationMiddleware.authenticate(), this.exerciseTaskController.getExercise())
     }
 }

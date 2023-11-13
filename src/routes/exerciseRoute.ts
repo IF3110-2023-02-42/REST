@@ -16,7 +16,7 @@ export class ExerciseRoute {
     // Method
     getRoute() {
         return Router()
-            .get("/getHistoryExerciseListById", this.exerciseController.getExerciseHistoryListById())
-            .get("/getHistoryExerciseById", this.exerciseController.getExerciseHistoryById())
+            .get("/getHistoryExerciseListById", this.authenticationMiddleware.authenticate(), this.exerciseController.getExerciseHistoryListById())
+            .get("/getHistoryExerciseById", this.authenticationMiddleware.authenticate(),  this.exerciseController.getExerciseHistoryById())
     }
 }
