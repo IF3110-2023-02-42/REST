@@ -1,125 +1,144 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { prisma } from "../services/prisma";
 
 export class ExerciseController {
-    getHistoryDummy() {
+    getExerciseHistoryListById() {
         return async (req: Request, res: Response) => {
-            const cardExerciseDum1 = {
-                judul: "Mengalahkan Natzi",
-                ID_Latsol: "123123123",
-                Nilai: 69,
-                Modified_at: new Date(),
-            };
+            try {
+                console.log("Getting History Exercise List by User Id");
 
-            const cardExerciseDum2 = {
-                judul: "Mendapatkan Waifu Natzi",
-                ID_Latsol: "696996",
-                Nilai: 12,
-                Modified_at: new Date(),
-            };
+                const ID_Pengguna = parseInt(req.query.ID_Pengguna as string);
 
-            const cardExerciseDum3 = {
-                judul: "Mendapatkan Husbando Natzi",
-                ID_Latsol: "7777",
-                Nilai: 99,
-                Modified_at: new Date(),
-            };
+                console.log('ID_Pengguna', ID_Pengguna);
+                if (isNaN(ID_Pengguna)) {
+                    throw new Error("ID_Pengguna must be a number");
+                }
+                console.log("ID_Pengguna : ", ID_Pengguna);
 
-            const dummyExerciseList = [
-                cardExerciseDum1,
-                cardExerciseDum2,
-                cardExerciseDum3,
-                cardExerciseDum1,
-                cardExerciseDum2,
-                cardExerciseDum3,
-            ];
+                const result = await prisma.history_Latsol.findMany({
+                    where: {
+                        ID_Pengguna: ID_Pengguna,
+                    },
+                    select: {
+                        Latsol: {
+                            select: {
+                                ID_Latsol: true,
+                                judul: true,
+                                deksripsi: true,
+                            },
+                        },
+                        ID_Latsol: true,
+                        modified_at: true,
+                        nilai: true,
+                    },
+                });
 
-            res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK,
-                data: dummyExerciseList,
-            });
-        }
+                const historyList = result.map(item => ({
+                    ID_Latsol: item.ID_Latsol,
+                    modified_at: item.modified_at,
+                    nilai: item.nilai,
+                    judul: item.Latsol.judul,
+                    deksripsi: item.Latsol.deksripsi,
+                }));
 
-    }
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: historyList,
+                });
 
-    getHistoryDummy2() {
-        return async (req: Request, res: Response) => {
-            const soalJawabanBener1 = {
-                ID_Soal: 10,
-                pertanyaan:
-                    "Sosiologi lahir sebagai ilmu yang mempelajari tentang masyarakat. Istilah sosiologi berasal dari bahasa Yunani socius yang berarti kawan dan logos yang artinya",
-                jawaban: "Hubungan sosial",
-                jawaban_benar: "Hubungan sosial",
-                jawaban_salah1: "Ilmu atau pikiran",
-                jawaban_salah2: "Kehidupan bersama",
-                jawaban_salah3: "Hubungan antar kelompok",
-            };
-
-            const soalJawabanBener2 = {
-                ID_Soal: 12,
-                pertanyaan:
-                    "Menurut teori konflik dalam sosiologi, apa yang menjadi sumber utama ketidaksetaraan dalam masyarakat?",
-                jawaban: "Pertentangan kepentingan antarkelompok",
-                jawaban_benar: "Pertentangan kepentingan antarkelompok",
-                jawaban_salah1: "Keterbatasan sumber daya alam",
-                jawaban_salah2: "Ketidakmampuan individu",
-                jawaban_salah3: "Perbedaan genetik",
-            };
-
-            const soalJawabanSalah1 = {
-                ID_Soal: 1,
-                pertanyaan:
-                    "Menurut teori konflik dalam sosiologi, apa yang menjadi sumber utama ketidaksetaraan dalam masyarakat?",
-                jawaban: "Ketidakmampuan individu",
-                jawaban_benar: "Pertentangan kepentingan antarkelompok",
-                jawaban_salah1: "Keterbatasan sumber daya alam",
-                jawaban_salah2: "Ketidakmampuan individu",
-                jawaban_salah3: "Perbedaan genetik",
-            };
-
-            const historyDummy = {
-                judul: "Mendapatkan Waifu Nantsuuu",
-                Nilai: 12,
-                Modified_at: new Date(),
-                pembahasan: [
-                    soalJawabanBener1,
-                    soalJawabanBener2,
-                    soalJawabanSalah1,
-                    soalJawabanBener2,
-                    soalJawabanSalah1,
-                    soalJawabanSalah1,
-                    soalJawabanBener1,
-                ],
-            };
-            res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK,
-                data: historyDummy,
-            });
-        }
-
-    }
-
-    addDiscussion() {
-        return async (req: Request, res: Response) => {
-            // Nanti insert data ke database
-
-            // Jika sukses, fetch data terbaru dari database (data yang baru diinput)
-            let discussion = {
-                key: 3,
-                judul: req.body.judul,
-                dateCreated: 0,
-                author: req.body.author,
-                contentSnippet: req.body.contentSnippet,
-                numOfComment: req.body.numOfComment,
-                keywords: req.body.keywords,
-            };
-
-            // Kirimkan kembali sebagai respond
-            res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK,
-                data: discussion,
-            });
+            } catch (error) {
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: "tes",
+                });
+            }
         }
     }
 
+    getExerciseHistoryById() {
+        return async (req: Request, res: Response) => {
+            try {
+                console.log("Getting History Exercise by User Id");
+
+                const ID_Pengguna = parseInt(req.query.ID_Pengguna as string);
+                const ID_Latsol = req.query.ID_Latsol as string;
+
+                const taskTitle = await prisma.latihan_Soal.findFirst({
+                    where: {
+                        ID_Latsol: ID_Latsol,
+                    },
+                    select: {
+                        judul: true,
+                        deksripsi: true,
+                        History_Latsol: {
+                            where: {
+                                ID_Pengguna: ID_Pengguna
+                            },
+                            select: {
+                                modified_at: true,
+                                nilai: true,
+                            }
+                        }
+
+                    }
+                })
+
+                if (!taskTitle) {
+                    throw new Error("No history found");
+                }
+
+                // all question
+                const questionHistoryList = await prisma.soal.findMany({
+                    where: {
+                        ID_Latsol: ID_Latsol,
+                    },
+                    select: {
+                        Jawaban_Pengguna: {
+                            where: {
+                                ID_Pengguna: ID_Pengguna,
+                            },
+                            select: {
+                                jawaban: true,
+                            }
+                        },
+                        ID_Soal: true,
+                        pertanyaan: true,
+                        jawaban_benar: true,
+                        jawaban_salah1: true,
+                        jawaban_salah2: true,
+                        jawaban_salah3: true,
+                    },
+                });
+
+                const questionHistoryListFlatten = questionHistoryList.map(item => ({
+                    ID_Soal: item.ID_Soal,
+                    pertanyaan: item.pertanyaan,
+                    jawaban: item.Jawaban_Pengguna.at(0)?.jawaban,
+                    jawaban_benar: item.jawaban_benar,
+                    jawaban_salah1: item.jawaban_salah1,
+                    jawaban_salah2: item.jawaban_salah2,
+                    jawaban_salah3: item.jawaban_salah3,
+                }));
+
+                const result = {
+                    judul: taskTitle.judul,
+                    deskripsi: taskTitle.deksripsi,
+                    Nilai: taskTitle.History_Latsol.at(0)?.nilai,
+                    Modified_at: taskTitle.History_Latsol.at(0)?.modified_at,
+                    pembahasan: questionHistoryListFlatten
+                }
+
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: result,
+                });
+
+            } catch (error: any) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: error.message,
+                });
+            }
+        }
+    }
 }
