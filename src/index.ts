@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { DiscussionRoute } from './routes/discussionRoute';
+import { DiscussionViewRoute } from './routes/discussionViewRoute';
 import { ExerciseRoute } from './routes/exerciseRoute';
 
 
@@ -15,6 +16,7 @@ if (require.main === module) { // Program hanya dijalankan jika dipanggil langsu
     );
     app.use(express.json());
     app.use('/discussion', new DiscussionRoute().getRoute());
+    app.use('/discussion_view', new DiscussionViewRoute().getRoute());
     app.use('/exercise', new ExerciseRoute().getRoute())
 
     app.listen(port, () => console.log(`App listening on port ${port}!`));
