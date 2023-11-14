@@ -65,7 +65,6 @@ export class DiscussionController {
                     numOfComment: newData.JumlahKomentar,
                     keywords: newData.Keywords.split(','),
                 };
-                console.log(req);
 
                 // Kirimkan kembali sebagai response
                 res.status(StatusCodes.OK).json({
