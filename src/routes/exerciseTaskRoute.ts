@@ -16,6 +16,7 @@ export class ExerciseTaskRoute {
     // Method
     getRoute(){
         return Router()
-            .get("/1", this.exerciseTaskController.getExercise())
+            .get("/:id", this.exerciseTaskController.getExercise())
+            .post("/:id/submit", this.exerciseTaskController.submitExercise())
     }
 }
