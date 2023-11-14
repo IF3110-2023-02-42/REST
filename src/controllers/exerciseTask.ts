@@ -38,14 +38,32 @@ export class ExerciseTaskController {
     }
 
     submitExercise(){
-        async function addJawaban(ID_Soal: string, ID_Pengguna: number, jawaban: string){
+        async function addJawaban(ID_soal: string, ID_Pengguna: number, jawaban: string){
+            const existingData = await prisma.jawaban_Pengguna.findUnique({
+                where: {
+                    ID_Soal_ID_Pengguna :{
+                        ID_Soal: ID_soal,
+                        ID_Pengguna: ID_Pengguna,
+                    }
+                },
+              });
+            if (existingData){
+                const result = await prisma.jawaban_Pengguna.delete({
+                    where: {
+                        ID_Soal_ID_Pengguna :{
+                            ID_Soal: ID_soal,
+                            ID_Pengguna: ID_Pengguna,
+                        }
+                    },
+                })
+            }
             const newJawaban = await prisma.jawaban_Pengguna.create({
                 data:{
-                    ID_Soal: ID_Soal,
+                    ID_Soal: ID_soal,
                     ID_Pengguna: ID_Pengguna,
                     jawaban: jawaban,
                 },
-            })
+            });
             return newJawaban;
         }
 
@@ -55,6 +73,7 @@ export class ExerciseTaskController {
                     ID_Latsol: ID_Latsol,
                 },
             })
+            return questions;
         }
 
         async function addNilai(ID_Latsol: string, ID_Pengguna: number, modified_at: Date, nilai: number){
@@ -79,6 +98,23 @@ export class ExerciseTaskController {
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
             });
+
+            // tambahin nilai
+            const kunjaw = await getAllExercise(req.params.id);
+            const total = kunjaw.length;
+            let sum = 0;
+            let kunjawlist = kunjaw.map((kj) => {
+                const ans = jawaban.filter((op: { ID_Soal: string; }) => op.ID_Soal === kj.ID_Soal);
+                console.log("ans:", ans[0].selected_jawaban);
+                console.log("jawaban benar:", kj.jawaban_benar);
+                if (ans[0].selected_jawaban == kj.jawaban_benar){
+                    sum++;
+                }
+            })
+
+            const nilai = (sum/total)*100;
+            console.log(nilai);
+            // const result = await addNilai(req.params.id, id_u, req.body.modified_at,nilai);
         }
     }
 }
