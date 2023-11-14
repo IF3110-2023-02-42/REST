@@ -1,54 +1,70 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
-
+import { prisma } from "../services/prisma";
 export class DiscussionViewController {
     getDetail(){
+        async function getDiscussionDetail(id_diskusi:string) {
+            const result = await prisma.diskusi.findUnique(
+                {
+                    where: {
+                        ID_Diskusi:id_diskusi
+                    }
+                }
+            )
+            return result;
+        }
+        
         return async (req: Request, res: Response) => {
             // ambil detail discussion
-            let detail =
-                {
-                    penulis: "penulis0123",
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                    judul: "Geometri Segitiga",
-                    konten: "apa rumus pythagoras???",
-                    jumlah_komentar: 3,
-                };
-            res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK,
-                data: detail,
-            });
+            let result = await getDiscussionDetail(req.params.idDiskusi);
+            if (result){
+                const currentTime = new Date().getTime();
+                const discussionTime = result?.Created_at.getTime(); 
+                let detail =
+                    {
+                        penulis: result.Penulis,
+                        created_at: Math.floor(Math.abs(currentTime - discussionTime) / (1000 * 60)),
+                        judul: result.Judul,
+                        konten: result.Konten,
+                        jumlah_komentar: result.JumlahKomentar,
+                        keywords: result.Keywords.split(','),
+                    };
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: detail,
+                });
+            }
         };
     }
-    getComments(){
+    getCommentsById(){
+        async function getAllComments(id_diskusi: string) {
+            const result = await prisma.komentar.findMany(
+                {
+                    where:{
+                        ID_Diskusi:id_diskusi
+                    }
+                }
+            );
+            return result;
+        }
         return async (req: Request, res: Response) => {
-            // ambil komentar discussion
-            let comments = [
-                {
-                    penulis: "komentator01",
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                    konten: "maaf gak tau:(",
-                    jumlah_upvote: 2,
-                    jumlah_downvote: 3,
-                },
-                {
-                    penulis: "komentator02",
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                    konten: "a^2 = b^2 + c^2 nder👍",
-                    jumlah_upvote: 10,
-                    jumlah_downvote: 1,
-                },
-                {
-                    penulis: "komentator02",
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                    konten: "gitu aja gabisa🥱",
-                    jumlah_upvote: 0,
-                    jumlah_downvote: 10,
-                },
-            ];
+            // ambil komentar comment
+            let results = await getAllComments(req.params.idDiskusi);
+
+            let comments = results.map((comment) => {
+                const currentTime = new Date().getTime();
+                const commentTime = comment.Updated_at.getTime();
+
+                return {
+                    id_komentar: comment.ID_Komentar,
+                    penulis: comment.Penulis,
+                    konten: comment.Konten,
+                    jumlah_upvote: comment.Jumlah_Upvote,
+                    jumlah_downvote: comment.Jumlah_Downvote,
+                    updated_at: Math.floor(Math.abs(currentTime - commentTime) / (1000 * 60)),
+                };
+            })
+
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
                 data: comments,
@@ -56,23 +72,53 @@ export class DiscussionViewController {
         }
     }
     addComment(){
+        async function addNewComment(id_diskusi: string, author: string, content: string, jumlah_upvote: number, jumlah_downvote: number) {
+            const comment = await prisma.komentar.create({
+                data: {
+                    ID_Diskusi: id_diskusi,
+                    Penulis: author,
+                    Konten: content,
+                    Jumlah_Upvote: jumlah_upvote,
+                    Jumlah_Downvote: jumlah_downvote,
+                },
+            })
+
+            // Tambah Jumlah Komentar pada diskusi yang bersangkutan
+            await prisma.diskusi.update({
+                where: {
+                    ID_Diskusi:id_diskusi
+                },
+                data :{
+                    JumlahKomentar: {
+                        increment:1
+                    }
+                }
+            })
+
+            return comment;
+        }
         return async (req: Request, res: Response) => {
             // tambah komentar ke database
+            let data = req.body;
+            let newData = await addNewComment(data.id_diskusi, data.penulis, data.konten, data.jumlah_upvote, data.jumlah_downvote);
+            
+            if (newData){
+                let comment = {
+                    id_komentar: newData.ID_Komentar,
+                    penulis: newData.Penulis,
+                    konten: newData.Konten,
+                    jumlah_upvote: newData.Jumlah_Upvote,
+                    jumlah_downvote: newData.Jumlah_Downvote,
+                    updated_at: 0,
+                }
+                console.log(req);
+    
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: comment,
+                });
 
-            let comment = {
-                id_diskusi: req.body.id,
-                penulis: req.body.penulis,
-                created_at: req.body.created_at,
-                updated_at: req.body.updated_at,
-                konten: req.body.konten,
-                jumlah_upvote: req.body.jumlah_upvote,
-                jumlah_downvote: req.body.jumlah_downvote,
             }
-
-            res.status(StatusCodes.OK).json({
-                message: ReasonPhrases.OK,
-                data: comment,
-            });
         }
     }
     upVote(){
