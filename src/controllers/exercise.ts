@@ -64,6 +64,14 @@ export class ExerciseController {
                 const ID_Pengguna = parseInt(req.query.ID_Pengguna as string);
                 const ID_Latsol = req.query.ID_Latsol as string;
 
+                if (!ID_Pengguna || isNaN(ID_Pengguna)) {
+                    throw new Error("ID_Pengguna is missing");
+                }
+
+                if (!ID_Latsol) {
+                    throw new Error("ID_Latsol is missing")
+                }
+
                 const taskTitle = await prisma.latihan_Soal.findFirst({
                     where: {
                         ID_Latsol: ID_Latsol,
@@ -85,7 +93,7 @@ export class ExerciseController {
                 })
 
                 if (!taskTitle) {
-                    throw new Error("No history found");
+                    throw new Error("History not found");
                 }
 
                 // all question
