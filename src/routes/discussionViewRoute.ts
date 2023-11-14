@@ -16,8 +16,8 @@ export class DiscussionViewRoute {
     // Method
     getRoute(){
         return Router()
-            .get("/1", this.discussionViewController.getDetail())
-            .get("/1/comment", this.discussionViewController.getComments())
-            .post("/1/addcomment", this.discussionViewController.addComment())
+            .get("/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getDetail())
+            .get("/comment/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getCommentsById())
+            .post("/comment/add",this.authenticationMiddleware.authenticate(), this.discussionViewController.addComment())
     }
 }

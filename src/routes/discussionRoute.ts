@@ -16,7 +16,7 @@ export class DiscussionRoute {
     // Method
     getRoute(){
         return Router()
-            .get("/", this.discussionController.findAll())
-            .post("/add", this.discussionController.addDiscussion())
+            .get("/", this.authenticationMiddleware.authenticate(), this.discussionController.findAll())
+            .post("/add", this.authenticationMiddleware.authenticate() ,this.discussionController.addDiscussion())
     }
 }

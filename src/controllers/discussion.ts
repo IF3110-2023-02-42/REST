@@ -2,24 +2,24 @@ import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { prisma } from "../services/prisma";
 export class DiscussionController {
-    
+
     findAll() {
-        async function getAllDiscussions(){
+        async function getAllDiscussions() {
             const result = await prisma.diskusi.findMany();
-            return result; 
+            return result;
         }
 
         return async (req: Request, res: Response) => {
             let result = await getAllDiscussions();
-            
+
             let discussions = result.map((discussion) => {
                 const currentTime = new Date().getTime();
                 const discussionTime = discussion.Created_at.getTime();
-                
+
                 return {
                     id: discussion.ID_Diskusi,
                     judul: discussion.Judul,
-                    dateCreated: Math.floor(Math.abs(currentTime - discussionTime) / (1000*60)),
+                    dateCreated: Math.floor(Math.abs(currentTime - discussionTime) / (1000 * 60)),
                     author: discussion.Penulis,
                     content: discussion.Konten,
                     numOfComment: discussion.JumlahKomentar,
@@ -36,16 +36,16 @@ export class DiscussionController {
 
     addDiscussion() {
 
-        async function addNewDiscussion(judul: string, author:string, content:string, numOfComment:number, keywords:string){
+        async function addNewDiscussion(judul: string, author: string, content: string, numOfComment: number, keywords: string) {
             const discussion = await prisma.diskusi.create({
-                data:{
-                    Judul : judul,
-                    Penulis : author,
-                    Konten : content,
-                    JumlahKomentar : numOfComment,
-                    Keywords : keywords,
-                    },
-                })
+                data: {
+                    Judul: judul,
+                    Penulis: author,
+                    Konten: content,
+                    JumlahKomentar: numOfComment,
+                    Keywords: keywords,
+                },
+            })
             return discussion;
         }
         return async (req: Request, res: Response) => {
@@ -53,7 +53,7 @@ export class DiscussionController {
             let data = req.body;
             let newData = await addNewDiscussion(data.judul, data.author, data.content, data.numOfComment, data.keywords);
 
-            if (newData){
+            if (newData) {
                 // Jika sukses, fetch data terbaru dari database (data yang baru diinput)
                 let discussion = {
                     id: newData.ID_Diskusi,
@@ -64,8 +64,7 @@ export class DiscussionController {
                     numOfComment: newData.JumlahKomentar,
                     keywords: newData.Keywords.split(','),
                 };
-                console.log(req);
-    
+
                 // Kirimkan kembali sebagai response
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
@@ -73,7 +72,7 @@ export class DiscussionController {
                 });
 
             }
-            
+
         }
     }
 }
