@@ -6,6 +6,7 @@ import { ExerciseRoute } from './routes/exerciseRoute';
 import { ExerciseTaskRoute } from './routes/exerciseTaskRoute';
 import { UserRoute } from './routes/userRoute';
 import { VerificationRoute } from './routes/verificationRoute';
+import { SoapRoutes } from './routes/soap';
 
 
 if (require.main === module) { // Program hanya dijalankan jika dipanggil langsung 
@@ -24,6 +25,7 @@ if (require.main === module) { // Program hanya dijalankan jika dipanggil langsu
     app.use('/exercise_task', new ExerciseTaskRoute().getRoute());
     app.use('/user', new UserRoute().getRoute());
     app.use('/verification', new VerificationRoute().getRoute());
+    app.use('/soap', new SoapRoutes().getRoute());
 
     app.listen(port, () => console.log(`App listening on port ${port}!`));
 }
