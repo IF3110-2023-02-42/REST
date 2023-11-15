@@ -141,4 +141,50 @@ export class ExerciseController {
             }
         }
     }
+    addSoal(){
+        async function addSoal(id_latsol: string, pertanyaan: string, jawaban_benar: string, jawaban_salah1: string, jawaban_salah2: string, jawaban_salah3: string){
+            const last_id = await prisma.soal.findMany({
+                take: 1,
+                orderBy: {
+                    ID_Soal: "desc",
+                }
+            });
+            
+            const add = await prisma.soal.create({
+                data:{
+                    ID_Latsol: id_latsol,
+                    ID_Soal: last_id[0]?.ID_Latsol+1,
+                    pertanyaan: pertanyaan,
+                    jawaban_benar: jawaban_benar,
+                    jawaban_salah1: jawaban_salah1,
+                    jawaban_salah2: jawaban_salah2,
+                    jawaban_salah3: jawaban_salah3,
+                }
+            })
+            return add;
+        }
+
+        return async (req: Request, res: Response) => {
+            let id_latsol = req.params.id; 
+            let add = await addSoal(id_latsol, req.body.pertanyaan, req.body.jawaban_benar, req.body.jawaban_salah1, req.body.jawaban_salah2, req.body.jawaban_salah3);
+            
+            if (add){
+                let q = {
+                    id_latsol: add.ID_Latsol,
+                    id_soal: add.ID_Soal,
+                    pertanyaan: add.pertanyaan,
+                    jawaban_benar: add.jawaban_benar,
+                    jawaban_salah1: add.jawaban_salah1,
+                    jawaban_salah2: add.jawaban_salah2,
+                    jawaban_salah3: add.jawaban_salah3,
+                }
+                console.log(q);
+
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: q,
+                });
+            }
+        }
+    }
 }
