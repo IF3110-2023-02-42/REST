@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { prisma } from "../services/prisma";
+import { P } from "pino";
 
 export class ExerciseController {
     getExerciseHistoryListById() {
@@ -153,7 +154,7 @@ export class ExerciseController {
             const add = await prisma.soal.create({
                 data:{
                     ID_Latsol: id_latsol,
-                    ID_Soal: last_id[0]?.ID_Latsol+1,
+                    ID_Soal: (parseInt(last_id[0]?.ID_Latsol)+1).toString(),
                     pertanyaan: pertanyaan,
                     jawaban_benar: jawaban_benar,
                     jawaban_salah1: jawaban_salah1,
@@ -165,8 +166,8 @@ export class ExerciseController {
         }
 
         return async (req: Request, res: Response) => {
-            let id_latsol = req.params.id; 
-            let add = await addSoal(id_latsol, req.body.pertanyaan, req.body.jawaban_benar, req.body.jawaban_salah1, req.body.jawaban_salah2, req.body.jawaban_salah3);
+            
+            let add = await addSoal(req.body.id_latsol, req.body.pertanyaan, req.body.jawaban_benar, req.body.jawaban_salah1, req.body.jawaban_salah2, req.body.jawaban_salah3);
             
             if (add){
                 let q = {
@@ -185,6 +186,24 @@ export class ExerciseController {
                     data: q,
                 });
             }
+        }
+    }
+    deleteSoal(){
+        async function deleteById(id: string){
+            const result = await prisma.soal.delete({
+                where:{
+                    ID_Soal:id
+                },
+            })
+            return result;
+        }
+
+        return async (req: Request, res: Response) => {
+            let result = await deleteById(req.params.id);
+
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+            });
         }
     }
 }

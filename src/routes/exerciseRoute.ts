@@ -18,6 +18,7 @@ export class ExerciseRoute {
         return Router()
             .get("/getHistoryExerciseListById", this.authenticationMiddleware.authenticate(), this.exerciseController.getExerciseHistoryListById())
             .get("/getHistoryExerciseById", this.authenticationMiddleware.authenticate(),  this.exerciseController.getExerciseHistoryById())
-            .post("/:id/addsoal/", this.exerciseController.addSoal)
+            .post("/addsoal/", this.exerciseController.addSoal())
+            .get("/delete/:id", this.exerciseController.deleteSoal())
     }
 }
