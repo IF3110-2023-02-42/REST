@@ -19,5 +19,7 @@ export class DiscussionViewRoute {
             .get("/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getDetail())
             .get("/comment/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getCommentsById())
             .post("/comment/add",this.authenticationMiddleware.authenticate(), this.discussionViewController.addComment())
+            .post("/comment/upvote",this.authenticationMiddleware.authenticate(), this.discussionViewController.upVote())
+            .post("/comment/downvote",this.authenticationMiddleware.authenticate(), this.discussionViewController.downVote())
     }
 }
