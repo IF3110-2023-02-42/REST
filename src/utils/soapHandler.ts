@@ -9,11 +9,13 @@ export const soapHandler = async (url: string, method: string, params?: string[]
             headers: {
                 'Content-Type': 'text/xml; charset=utf-8',
                 'SOAPAction': url + '/' + method,
+                'api-key': process.env.SOAP_KEY,
             },
             data: buildXMLbody(method, params)
         });
         return parseXML(response.data, method);
     } catch (error: any) {
+        console.log('error', error)
         throw new Error(`SOAP request failed: ${error.message}`);
     }
 

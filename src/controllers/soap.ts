@@ -3,7 +3,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { soapHandler } from "../utils/soapHandler"
 
 export class SoapController {
-    private url: string = process.env.SOAP_BASE_ENDPOINT ?? "http://localhost:6060/api";
+    private url: string = process.env.SOAP_BASE_ENDPOINT || "http://host.docker.internal:6060/api";
     test() {
         return async (req: Request, res: Response) => {
             try {
@@ -14,7 +14,7 @@ export class SoapController {
                 });
             } catch (error: any) {
                 res.status(StatusCodes.BAD_REQUEST).json({
-                    message: error.message,
+                    message: error.message + this.url,
                 });
             }
         }
