@@ -136,7 +136,7 @@ export class DiscussionViewController {
         }
 
         return async (req: Request, res: Response) =>{
-            let id_komentar = req.body.id_komentar;
+            let id_komentar = req.params.id;
             let result = up(id_komentar);
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
@@ -158,7 +158,7 @@ export class DiscussionViewController {
         }
 
         return async (req: Request, res: Response) =>{
-            let id_komentar = req.body.id_komentar;
+            let id_komentar = req.params.id;
             let result = down(id_komentar);
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
