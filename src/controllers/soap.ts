@@ -7,7 +7,7 @@ export class SoapController {
     test() {
         return async (req: Request, res: Response) => {
             try {
-                const response = await soapHandler(this.url, "getAllLog")
+                const response = await soapHandler(this.url, "GetDummyData")
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
                     data: response,
