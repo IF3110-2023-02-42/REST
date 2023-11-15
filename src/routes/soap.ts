@@ -16,6 +16,6 @@ export class SoapRoutes {
     // Method
     getRoute() {
         return Router()
-            .get("/test", this.authenticationMiddleware.authenticate(), this.soapController.test())
+            .get("/test", this.soapController.test())
     }
 }

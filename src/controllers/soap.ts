@@ -3,10 +3,11 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { soapHandler } from "../utils/soapHandler"
 
 export class SoapController {
+    private url: string = process.env.SOAP_BASE_ENDPOINT ?? "http://localhost:6060/api";
     test() {
         return async (req: Request, res: Response) => {
             try {
-                const response = soapHandler("http://localhost:6060/api", "getAllLog")
+                const response = await soapHandler(this.url, "getAllLog")
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
                     data: response,

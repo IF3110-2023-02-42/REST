@@ -1,31 +1,31 @@
 import axios from "axios"
 import converter from "xml-js"
 
-type Header = {
-    [key: string]: string | undefined
-}
-
-export const soapHandler = async (url: string, method: string, params?: Object) => {
-    const headers: Header = {
-        'Content-Type': 'text/xml;charset=UTF-8',
-        SOAPAction: '#POST',
-        'api-key': process.env.SOAP_KEY,
+export const soapHandler = async (url: string, method: string, params?: string[]) => {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: url,
+            headers: {
+                'Content-Type': 'text/xml; charset=utf-8',
+                'SOAPAction': url + '/' + method,
+            },
+            data: buildXMLbody(method, params)
+        });
+        return parseXML(response.data, method);
+    } catch (error: any) {
+        throw new Error(`SOAP request failed: ${error.message}`);
     }
 
-    const xml = buildXMLRequest(method, params)
-    const response = await axios.post(url, xml, { headers })
-    const data = response.data;
-
-    return parseXML(data, method);
 }
 
-const buildXMLRequest = (method: string, params?: Object) => {
+const buildXMLbody = (method: string, params?: string[]) => {
     const strParams = buildXMLParams(params)
 
     return `
       <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
         <Body>
-          <${method} xmlns="http://ws/">
+          <${method} xmlns="http://service/">
             ${strParams}
           </${method}>
         </Body>
@@ -33,13 +33,13 @@ const buildXMLRequest = (method: string, params?: Object) => {
     `
 }
 
-const buildXMLParams = (params?: Object) => {
+const buildXMLParams = (params?: string[]) => {
     if (!params) {
         return ''
     }
 
     const keyValue = Object.keys(params).map((key) => {
-        return `<${key} xmlns="">${params[key as keyof typeof params]}</${key}>`
+        return `<arg${key} xmlns="">${params}</arg${key}>`
     })
 
     return keyValue.join('')
