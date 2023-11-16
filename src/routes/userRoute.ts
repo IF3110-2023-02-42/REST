@@ -5,7 +5,7 @@ import { UserController } from "../controllers/user";
 export class UserRoute {
     // Attributes
     authenticationMiddleware: AuthenticationMiddleware;
-    userController : UserController;
+    userController: UserController;
 
     // Ctor
     constructor() {
@@ -14,8 +14,8 @@ export class UserRoute {
     }
 
     // Method
-    getRoute(){
+    getRoute() {
         return Router()
-            .post("/login",  this.userController.login()) 
+            .post("/login", this.userController.login())
     }
 }

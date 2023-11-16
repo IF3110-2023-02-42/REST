@@ -12,7 +12,7 @@ export class DiscussionController {
         return async (req: Request, res: Response) => {
             let result = await getAllDiscussions();
 
-            let discussions = result.map((discussion) => {
+            let discussions = result.map((discussion: any) => {
                 const currentTime = new Date().getTime();
                 const discussionTime = discussion.Created_at.getTime();
 
@@ -24,7 +24,8 @@ export class DiscussionController {
                     content: discussion.Konten,
                     numOfComment: discussion.JumlahKomentar,
                     keywords: (discussion.Keywords).split(","),
-                }}
+                }
+            }
             )
 
             res.status(StatusCodes.OK).json({
