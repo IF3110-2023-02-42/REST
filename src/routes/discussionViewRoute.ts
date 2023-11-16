@@ -19,7 +19,9 @@ export class DiscussionViewRoute {
             .get("/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getDetail())
             .get("/comment/:idDiskusi", this.authenticationMiddleware.authenticate(), this.discussionViewController.getCommentsById())
             .post("/comment/add",this.authenticationMiddleware.authenticate(), this.discussionViewController.addComment())
-            .get("/comment/upvote/:id", this.discussionViewController.upVote())
-            .get("/comment/downvote/:id", this.discussionViewController.downVote())
+            .get("/comment/upvote/:id_komentar/:id_pengguna", this.discussionViewController.upVote())
+            .get("/comment/downvote/:id_komentar/:id_pengguna", this.discussionViewController.downVote())
+            .get("/comment/confirmvote/:id_komentar/:id_pengguna", this.discussionViewController.confirmVote())
+            .get("/comment/getvote/:id_komentar", this.discussionViewController.getVote())
     }
 }
