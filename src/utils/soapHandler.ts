@@ -23,26 +23,27 @@ export const soapHandler = async (url: string, method: string, params?: string[]
 
 const buildXMLbody = (method: string, params?: string[]) => {
     const strParams = buildXMLParams(params)
-
-    return `
-      <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-        <Body>
-          <${method} xmlns="http://service/">
-            ${strParams}
-          </${method}>
-        </Body>
-      </Envelope>
-    `
+    const xmlBody = `
+    <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+      <Body>
+        <${method} xmlns="http://service/">
+          ${strParams}
+        </${method}>
+      </Body>
+    </Envelope>
+  `
+    console.log(xmlBody);
+    return xmlBody;
 }
 
 const buildXMLParams = (params?: string[]) => {
     if (!params) {
         return ''
     }
-
-    const keyValue = Object.keys(params).map((key) => {
-        return `<arg${key} xmlns="">${params}</arg${key}>`
-    })
+    
+    const keyValue = params.map((param, index)=> {
+        return `<arg${index} xmlns="">${param}</arg${index}>`
+    });
 
     return keyValue.join('')
 }
