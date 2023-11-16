@@ -3,8 +3,9 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { sign } from "jsonwebtoken";
 import { secretToken, expireIn } from "../config/jwtConfig";
 import { phpHandlerPOST } from "../utils/phpHandler";
-
+import { soapHandler } from "../utils/soapHandler";
 export class UserController {
+    private url: string = process.env.SOAP_BASE_ENDPOINT ?? "http://localhost:6060/api";
     login() {
         return async (req: Request, res: Response) => {
             try {
@@ -25,12 +26,21 @@ export class UserController {
 
                 const { ID_Pengguna, nama_depan, nama_belakang, username, email, role, profile_pict } = response.data;
 
+                // Get the verificationStatus from SOAP
+      
+                let params = [ID_Pengguna];
+                // let verificationStatus = await soapHandler(this.url, "getUserStatus", params);
+                let verificationStatus = "unverified";
+        
+
                 const accessToken = sign({ ID_Pengguna: ID_Pengguna, nama_depan: nama_depan, nama_belakang: nama_belakang, username: username, email: email, role: role, profile_pict: profile_pict }, secretToken, {
                     expiresIn: expireIn,
                 })
+
+                const sessionData = {accessToken: accessToken, ID_Pengguna:ID_Pengguna, verificationStatus:verificationStatus}
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
-                    data: accessToken
+                    data: sessionData, 
                 })
 
             } catch (error: any) {
