@@ -3,6 +3,7 @@ import converter from "xml-js"
 
 export const soapHandler = async (url: string, method: string, params?: string[]) => {
     try {
+        const data = buildXMLbody(method, params)
         const response = await axios({
             method: 'post',
             url: url,
@@ -13,6 +14,7 @@ export const soapHandler = async (url: string, method: string, params?: string[]
             },
             data: buildXMLbody(method, params)
         });
+        // console.log(response);
         return parseXML(response.data, method);
     } catch (error: any) {
         console.log('error', error)
@@ -32,7 +34,7 @@ const buildXMLbody = (method: string, params?: string[]) => {
       </Body>
     </Envelope>
   `
-    console.log(xmlBody);
+
     return xmlBody;
 }
 
@@ -55,7 +57,6 @@ const parseXML = (xml: string, method: string) => {
     if (!returnVal) {
         return null
     }
-
     return buildResponseJSON(returnVal)
 }
 
@@ -69,7 +70,7 @@ const buildResponseJSON = (json: JSON) => {
 
 const flatten = (json: JSON): JSON => {
     const response: any = {}
-
+    console.log(Object.keys(json));
     Object.keys(json).forEach((key) => {
         const value = json[key as keyof typeof json]
         response[key] = value['_text' as keyof typeof value]

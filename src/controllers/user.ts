@@ -30,7 +30,7 @@ export class UserController {
       
                 let params = [ID_Pengguna];
                 // let verificationStatus = await soapHandler(this.url, "getUserStatus", params);
-                let verificationStatus = "unverified";
+                let verificationStatus = "rejected";
         
 
                 const accessToken = sign({ ID_Pengguna: ID_Pengguna, nama_depan: nama_depan, nama_belakang: nama_belakang, username: username, email: email, role: role, profile_pict: profile_pict }, secretToken, {
@@ -52,5 +52,16 @@ export class UserController {
     }
     logout() {
 
+    }
+
+    getUserStatus(){
+        return async (req: Request, res: Response) => {
+            let result = await soapHandler(this.url, "getUserStatus",[req.params.ID_Pengguna]);
+  
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: result,
+            });
+        };       
     }
 }

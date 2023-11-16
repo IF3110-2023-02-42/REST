@@ -17,5 +17,6 @@ export class UserRoute {
     getRoute() {
         return Router()
             .post("/login", this.userController.login())
+            .get("/userStatus/:ID_Pengguna", this.userController.getUserStatus())
     }
 }
