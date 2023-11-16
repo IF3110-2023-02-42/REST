@@ -17,6 +17,5 @@ export class UserRoute {
     getRoute() {
         return Router()
             .post("/login", this.userController.login())
-            .post("/logintest", this.userController.loginTest())
     }
 }

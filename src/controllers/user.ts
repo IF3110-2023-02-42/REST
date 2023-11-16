@@ -40,25 +40,7 @@ export class UserController {
             }
         }
     }
-    loginTest() {
-        return async (req: Request, res: Response) => {
-            try {
-                const data = {
-                    username: req.body.username,
-                    password: req.body.password
-                }
-                const response = await phpHandlerPOST(process.env.PHP_BASE_ENDPOINT + "/auth/restauth", data)
+    logout() {
 
-                res.status(StatusCodes.OK).json({
-                    message: ReasonPhrases.OK,
-                    data: response
-                })
-
-            } catch (error: any) {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: error.message,
-                });
-            }
-        }
     }
 }
