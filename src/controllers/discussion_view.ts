@@ -122,9 +122,47 @@ export class DiscussionViewController {
         }
     }
     upVote(){
+        async function up(id_komentar: string){
+            const result = await prisma.komentar.update({
+                where:{
+                    ID_Komentar: id_komentar
+                },
+                data:{
+                    Jumlah_Upvote: {
+                        increment:1
+                    }
+                },
+            })
+        }
 
+        return async (req: Request, res: Response) =>{
+            let id_komentar = req.params.id;
+            let result = up(id_komentar);
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+            });
+        }
     }
     downVote(){
+        async function down(id_komentar: string){
+            const result = await prisma.komentar.update({
+                where:{
+                    ID_Komentar: id_komentar
+                },
+                data:{
+                    Jumlah_Downvote: {
+                        increment:1
+                    }
+                },
+            })
+        }
 
+        return async (req: Request, res: Response) =>{
+            let id_komentar = req.params.id;
+            let result = down(id_komentar);
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+            });
+        }
     }
 }
