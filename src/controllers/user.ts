@@ -29,15 +29,13 @@ export class UserController {
                 // Get the verificationStatus from SOAP
       
                 let params = [ID_Pengguna];
-                // let verificationStatus = await soapHandler(this.url, "getUserStatus", params);
-                let verificationStatus = "rejected";
         
 
                 const accessToken = sign({ ID_Pengguna: ID_Pengguna, nama_depan: nama_depan, nama_belakang: nama_belakang, username: username, email: email, role: role, profile_pict: profile_pict }, secretToken, {
                     expiresIn: expireIn,
                 })
 
-                const sessionData = {accessToken: accessToken, ID_Pengguna:ID_Pengguna, verificationStatus:verificationStatus}
+                const sessionData = {accessToken: accessToken, ID_Pengguna:ID_Pengguna}
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
                     data: sessionData, 

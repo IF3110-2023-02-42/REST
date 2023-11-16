@@ -17,6 +17,8 @@ export class DiscussionRoute {
     getRoute(){
         return Router()
             .get("/", this.authenticationMiddleware.authenticate(), this.discussionController.findAll())
+            .get("/page", this.authenticationMiddleware.authenticate(), this.discussionController.getDiscussionPage())
+            .get("/maxPage/:pageSize", this.authenticationMiddleware.authenticate(), this.discussionController.getMaxPage())
             .post("/add", this.authenticationMiddleware.authenticate() ,this.discussionController.addDiscussion())
     }
 }
