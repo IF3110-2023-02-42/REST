@@ -14,7 +14,7 @@ export class UserController {
                     password: req.body.password
                 }
                 const response = await phpHandlerPOST(process.env.PHP_BASE_ENDPOINT + "/auth/restauth", data)
-                if (response.status === "false") {
+                if (!response.status) {
                     if (response.data === "wrong_password") {
                         throw new Error("Wrong password");
                     } else if (response.data === "account_not_found") {
@@ -23,27 +23,29 @@ export class UserController {
                         throw new Error("Something wrong happen");
                     }
                 }
+                console.log('response', response)
 
                 const { ID_Pengguna, nama_depan, nama_belakang, username, email, role, profile_pict } = response.data;
 
                 // Get the verificationStatus from SOAP
-      
+
                 let params = [ID_Pengguna];
-        
+
 
                 const accessToken = sign({ ID_Pengguna: ID_Pengguna, nama_depan: nama_depan, nama_belakang: nama_belakang, username: username, email: email, role: role, profile_pict: profile_pict }, secretToken, {
                     expiresIn: expireIn,
                 })
 
-                const sessionData = {accessToken: accessToken, ID_Pengguna:ID_Pengguna}
+                const sessionData = { accessToken: accessToken, ID_Pengguna: ID_Pengguna }
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,
-                    data: sessionData, 
+                    data: sessionData,
                 })
 
             } catch (error: any) {
                 res.status(StatusCodes.NOT_FOUND).json({
-                    message: error.message,
+                    message: ReasonPhrases.NOT_FOUND,
+                    data: error.message
                 });
             }
         }
@@ -52,14 +54,14 @@ export class UserController {
 
     }
 
-    getUserStatus(){
+    getUserStatus() {
         return async (req: Request, res: Response) => {
-            let result = await soapHandler(this.url, "getUserStatus",[req.params.ID_Pengguna]);
-  
+            let result = await soapHandler(this.url, "getUserStatus", [req.params.ID_Pengguna]);
+
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
                 data: result,
             });
-        };       
+        };
     }
 }
