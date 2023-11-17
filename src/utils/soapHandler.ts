@@ -70,7 +70,6 @@ const buildResponseJSON = (json: JSON) => {
 
 const flatten = (json: JSON): JSON => {
     const response: any = {}
-    console.log(Object.keys(json));
     Object.keys(json).forEach((key) => {
         const value = json[key as keyof typeof json]
         response[key] = value['_text' as keyof typeof value]
