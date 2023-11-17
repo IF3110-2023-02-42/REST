@@ -29,6 +29,16 @@ model Komentar {
   Konten          String
   Jumlah_Upvote   Int
   Jumlah_Downvote Int
+  Feedback        Feedback[]
+}
+
+model Feedback {
+  komentar      Komentar  @relation(fields: [ID_Komentar], references: [ID_Komentar])
+  ID_Komentar   String
+  ID_Pengguna   Int
+  Is_upvote     Int
+
+  @@id([ID_Komentar,ID_Pengguna])
 }
 
 model Soal {
