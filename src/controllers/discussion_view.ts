@@ -165,4 +165,72 @@ export class DiscussionViewController {
             });
         }
     }
+    getMaxPage() {
+        return async (req: Request, res: Response) => {
+            try{
+                let numOfRecord = await prisma.komentar.count(
+                    {
+                        where : {
+                            ID_Diskusi:req.params.idDiskusi
+                        }
+                    }
+                );
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: Math.ceil(numOfRecord/parseInt(req.params.pageSize)),
+                });
+            } catch (error: any) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: error.message,
+                });
+            }
+        }
+    }
+    getCommentsByIDDiskusiPage() {
+
+        async function getPage(pageNumber:number, pageSize:number, idDiskusi:string) {
+            const discussion = await prisma.komentar.findMany({
+                where : {
+                    ID_Diskusi: idDiskusi,
+                },
+                take:pageSize,
+                skip:(pageNumber-1)*pageSize,
+                orderBy: [
+                    {
+                        Created_at : 'desc',
+                    },
+                ]
+            });
+            return discussion;
+        }
+        return async (req: Request, res: Response) => {
+            try{
+                let results = await getPage(parseInt(req.query.pageNumber as string),parseInt(req.query.pageSize as string), req.params.idDiskusi as string);
+                let comments = results.map((comment) => {
+                    const currentTime = new Date().getTime();
+                    const commentTime = comment.Updated_at.getTime();
+    
+                    return {
+                        id_komentar: comment.ID_Komentar,
+                        penulis: comment.Penulis,
+                        konten: comment.Konten,
+                        jumlah_upvote: comment.Jumlah_Upvote,
+                        jumlah_downvote: comment.Jumlah_Downvote,
+                        updated_at: Math.floor(Math.abs(currentTime - commentTime) / (1000 * 60)),
+                    };
+                })
+
+                res.status(StatusCodes.OK).json({
+                    message: ReasonPhrases.OK,
+                    data: comments,
+                });
+
+            }catch (error: any) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: error.message,
+                });
+            }
+
+        }
+    }
 }

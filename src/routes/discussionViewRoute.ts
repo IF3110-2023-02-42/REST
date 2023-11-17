@@ -21,5 +21,7 @@ export class DiscussionViewRoute {
             .post("/comment/add",this.authenticationMiddleware.authenticate(), this.discussionViewController.addComment())
             .get("/comment/upvote/:id", this.discussionViewController.upVote())
             .get("/comment/downvote/:id", this.discussionViewController.downVote())
+            .get("/comment/:idDiskusi/maxPage", this.discussionViewController.getMaxPage())
+            .get("/comment/:idDiskusi/page", this.discussionViewController.getCommentsByIDDiskusiPage())
     }
 }
