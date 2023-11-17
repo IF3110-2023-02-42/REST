@@ -121,8 +121,57 @@ export class DiscussionViewController {
             }
         }
     }
+    getVote(){
+        async function votes(id_komentar: string){
+            const result = await prisma.komentar.findUnique({
+                where:{
+                    ID_Komentar: id_komentar,
+                }
+            })
+            return result;
+        }
+        return async (req: Request, res: Response) =>{
+            let id_komentar = req.params.id_komentar;
+            let result = await votes(id_komentar);
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: result,
+            });
+        }
+    }
+    confirmVote(){
+        async function check(id_komentar: string, id_pengguna: string){
+            const exist = await prisma.feedback.findUnique({
+                where:{
+                    ID_Komentar_ID_Pengguna:{
+                        ID_Komentar: id_komentar,
+                        ID_Pengguna: parseInt(id_pengguna),
+                    },
+                }
+            })
+            return exist;
+        }
+        return async (req: Request, res: Response) =>{
+            const exist = await check(req.params.id_komentar, req.params.id_pengguna);
+            let data;
+            if (exist){
+                data = {
+                    Is_upvote: exist.Is_upvote,
+                }
+            }
+            else{
+                data = {
+                    Is_upvote: -1,
+                }
+            }
+            res.status(StatusCodes.OK).json({
+                message: ReasonPhrases.OK,
+                data: data,
+            });
+        }
+    }
     upVote(){
-        async function up(id_komentar: string){
+        async function up(id_komentar: string, id_pengguna: string){
             const result = await prisma.komentar.update({
                 where:{
                     ID_Komentar: id_komentar
@@ -132,19 +181,71 @@ export class DiscussionViewController {
                         increment:1
                     }
                 },
+            });
+            const existingData = await prisma.feedback.findUnique({
+                where: {
+                        ID_Komentar_ID_Pengguna:{
+                        ID_Komentar: id_komentar,
+                        ID_Pengguna: parseInt(id_pengguna),
+                    }
+                }
+            });
+            if (existingData){
+                const result = await prisma.feedback.delete({
+                    where: {
+                        ID_Komentar_ID_Pengguna:{
+                            ID_Komentar: id_komentar,
+                            ID_Pengguna: parseInt(id_pengguna),
+                        }
+                    },
+                })
+                if (existingData.Is_upvote == 1){
+                    const result = await prisma.komentar.update({
+                        where:{
+                            ID_Komentar: id_komentar
+                        },
+                        data:{
+                            Jumlah_Upvote: {
+                                increment:-1
+                            }
+                        },
+                    });
+                }
+                else{
+                    const result = await prisma.komentar.update({
+                        where:{
+                            ID_Komentar: id_komentar
+                        },
+                        data:{
+                            Jumlah_Downvote: {
+                                increment:-1
+                            }
+                        },
+                    });
+                }
+            }
+            const newFeedback = await prisma.feedback.create({
+                data:{
+                    ID_Komentar: id_komentar,
+                    ID_Pengguna: parseInt(id_pengguna),
+                    Is_upvote: 1,
+                }
             })
+            return newFeedback;
         }
 
         return async (req: Request, res: Response) =>{
-            let id_komentar = req.params.id;
-            let result = up(id_komentar);
+            let id_komentar = req.params.id_komentar;
+            let id_pengguna = req.params.id_pengguna;
+            let result = await up(id_komentar, id_pengguna);
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
+                data: result,
             });
         }
     }
     downVote(){
-        async function down(id_komentar: string){
+        async function down(id_komentar: string, id_pengguna: string){
             const result = await prisma.komentar.update({
                 where:{
                     ID_Komentar: id_komentar
@@ -155,13 +256,65 @@ export class DiscussionViewController {
                     }
                 },
             })
+            const existingData = await prisma.feedback.findUnique({
+                where: {
+                        ID_Komentar_ID_Pengguna:{
+                        ID_Komentar: id_komentar,
+                        ID_Pengguna: parseInt(id_pengguna),
+                    }
+                }
+            });
+            if (existingData){
+                const result = await prisma.feedback.delete({
+                    where: {
+                        ID_Komentar_ID_Pengguna:{
+                            ID_Komentar: id_komentar,
+                            ID_Pengguna: parseInt(id_pengguna),
+                        }
+                    },
+                })
+                if (existingData.Is_upvote == 1){
+                    const result = await prisma.komentar.update({
+                        where:{
+                            ID_Komentar: id_komentar
+                        },
+                        data:{
+                            Jumlah_Upvote: {
+                                increment:-1
+                            }
+                        },
+                    });
+                }
+                else{
+                    const result = await prisma.komentar.update({
+                        where:{
+                            ID_Komentar: id_komentar
+                        },
+                        data:{
+                            Jumlah_Downvote: {
+                                increment:-1
+                            }
+                        },
+                    });
+                }
+            }
+            const newFeedback = await prisma.feedback.create({
+                data:{
+                    ID_Komentar: id_komentar,
+                    ID_Pengguna: parseInt(id_pengguna),
+                    Is_upvote: 0,
+                }
+            })
+            return newFeedback;
         }
 
         return async (req: Request, res: Response) =>{
-            let id_komentar = req.params.id;
-            let result = down(id_komentar);
+            let id_komentar = req.params.id_komentar;
+            let id_pengguna = req.params.id_pengguna;
+            let result = await down(id_komentar, id_pengguna);
             res.status(StatusCodes.OK).json({
                 message: ReasonPhrases.OK,
+                data: result,
             });
         }
     }
