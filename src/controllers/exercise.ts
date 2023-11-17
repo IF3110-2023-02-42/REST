@@ -63,6 +63,7 @@ export class ExerciseController {
 
                 const ID_Pengguna = parseInt(req.query.ID_Pengguna as string);
                 const ID_Latsol = req.query.ID_Latsol as string;
+                console.log(`User with id ${ID_Pengguna} is trying to get history with id ${ID_Latsol}`)
 
                 if (!ID_Pengguna || isNaN(ID_Pengguna)) {
                     throw new Error("ID_Pengguna is missing");
@@ -72,25 +73,24 @@ export class ExerciseController {
                     throw new Error("ID_Latsol is missing")
                 }
 
-                const taskTitle = await prisma.latihan_Soal.findFirst({
+                const taskTitle = await prisma.history_Latsol.findFirst({
                     where: {
                         ID_Latsol: ID_Latsol,
+                        ID_Pengguna: ID_Pengguna,
                     },
                     select: {
-                        judul: true,
-                        deksripsi: true,
-                        History_Latsol: {
-                            where: {
-                                ID_Pengguna: ID_Pengguna
-                            },
+                        modified_at: true,
+                        nilai: true,
+                        Latsol: {
                             select: {
-                                modified_at: true,
-                                nilai: true,
+                                judul: true,
+                                deksripsi: true,
                             }
                         }
 
                     }
                 })
+
 
                 if (!taskTitle) {
                     throw new Error("History not found");
@@ -130,12 +130,13 @@ export class ExerciseController {
                 }));
 
                 const result = {
-                    judul: taskTitle.judul,
-                    deskripsi: taskTitle.deksripsi,
-                    Nilai: taskTitle.History_Latsol.at(0)?.nilai,
-                    Modified_at: taskTitle.History_Latsol.at(0)?.modified_at,
+                    judul: taskTitle.Latsol.judul,
+                    deskripsi: taskTitle.Latsol.deksripsi,
+                    Nilai: taskTitle.nilai,
+                    Modified_at: taskTitle.modified_at,
                     pembahasan: questionHistoryListFlatten
                 }
+                // console.log('result\n', result)
 
                 res.status(StatusCodes.OK).json({
                     message: ReasonPhrases.OK,

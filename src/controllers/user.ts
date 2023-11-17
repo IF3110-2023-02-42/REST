@@ -43,8 +43,8 @@ export class UserController {
                 })
 
             } catch (error: any) {
-                res.status(StatusCodes.NOT_FOUND).json({
-                    message: ReasonPhrases.NOT_FOUND,
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: ReasonPhrases.BAD_REQUEST,
                     data: error.message
                 });
             }
